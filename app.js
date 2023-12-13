@@ -7,7 +7,8 @@ var logger = require("morgan");
 var indexRouter = require("./routes/index");
 
 // Router 커스터마이징 시작
-
+var indexRouter = require("./routes/index");
+var channelRouter = require("./routes/channel");
 // Router 커스터마이징 끝
 
 const session = require("express-session");
@@ -34,9 +35,9 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
 
 // Router Use 적용 시작
-
 app.use("/", indexRouter);
-
+app.use("/", indexRouter);
+app.use("/chat/", channelRouter);
 // Router Use 적용 끝
 
 // catch 404 and forward to error handler
