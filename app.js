@@ -7,6 +7,8 @@ var logger = require("morgan");
 var indexRouter = require("./routes/index");
 
 // Router 커스터마이징 시작
+var indexRouter = require("./routes/index");
+var channelRouter = require("./routes/channel");
 var channelAPIRouter = require("./routes/channelAPI")
 // Router 커스터마이징 끝
 
@@ -34,8 +36,8 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
 
 // Router Use 적용 시작
-
 app.use("/", indexRouter);
+app.use("/chat/", channelRouter);
 app.use("/api/channel",channelAPIRouter)
 // Router Use 적용 끝
 
