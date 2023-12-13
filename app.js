@@ -36,7 +36,6 @@ app.use(express.static(path.join(__dirname, "public")));
 
 // Router Use 적용 시작
 app.use("/", indexRouter);
-app.use("/", indexRouter);
 app.use("/chat/", channelRouter);
 // Router Use 적용 끝
 
