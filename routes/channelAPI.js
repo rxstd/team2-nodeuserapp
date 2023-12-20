@@ -1,61 +1,162 @@
-//채널 데이터를 관리하는 restFul 라우터 파일 
-//http://localhost:3000/api/channel~
-
-var express = require('express');
+var express = require("express");
 var router = express.Router();
+var dotenv = require("dotenv");
 
-router.get('/all',async(req,res,next)=>{
-    var channelList= [
-        //db에서 채널목록정보를 모두 조회해 왔다고 가정하빈다.
-        {channel_id:1,channel1_name:"채널1"},
-        {channel_id:2,channel1_name:"채널2"},
-        {channel_id:3,channel1_name:"채널3"}
-        ]
-        //resjoan=>json 데이터 전달
-    
-        res.json(channelList);
-    })
+var userMiddleware = require("../middleware/user.middleware");
+var chatStore = require("../store/chat.store");
 
-    //채널 정보를 신규 등록하는 restapi라우팅 메소드
-router.post("/create",async(req,res)=>{
-        //step1 클라이언트나 프런트엔드에서 json형태로 데이터를 전달해준다고 가정하자
-        /*
-        
-    {"channel_name":"채널1"
-    "channel_desc":"채널 설명1"
-    }
-        
-        */
-       //step2 프런트엔드/클라이언트에서 보내준 json데이터를 추출한다.
-        var channelName = req.body.channel_name
-        var channelDescription= req.body.channel_desc
-    //step3  db의 채널 테이블에 해당 정보를 저장하기위한 json 객체를 정의한다.
-    var channel={
-        channel_id:1,
-        channel_name:channelName,
-        channel_desc:channelDescription
-    }
-    //step 4: dB에 채널 테이블에 프런트 에서 넘어온 데이터를 저장한다.
-    //step 5: 저장후 반환되는 실제 db dp저장된 단일 채널 정보를 클라이언트에 반환한다.
-    res.json(channel)
-})
-router.post('/modify',async(req,res,next)=>{
-res.redirect('/all')
-})
-router.post('/delete',async(req,res,next)=>{
-    res.redirect('/all')
-})
-router.get('/:cid',async(req,res,next)=>{
-        
-    var channelId = req.params.id
-    
-    var channel = {
-    channel_id:1,
-    channel_name:"채널1",
-    channel_desc:"채널 설명"
-}
-res.json(channel)
-})
+dotenv.config();
 
+const webTitle = process.env.PROJECT_TITLE;
 
-    module.exports = router;
+router.get("/all", userMiddleware, function (req, res, next) {
+  const channelList = chatStore.getChannels();
+  try {
+    res.json({ message: "채널 목록 조회에 성공했습니다.", data: channelList });
+  } catch (error) {
+    res.json({ message: "채널 목록 조회에 실패했습니다.", data: {} });
+  }
+});
+
+router.get("/all/three", userMiddleware, function (req, res, next) {
+  const channelList = chatStore.getChannelsMaximumThree();
+  try {
+    res.json({
+      message: "Recent 채널 목록 조회에 성공했습니다.",
+      data: channelList,
+    });
+  } catch (error) {
+    res.json({ message: "Recent 채널 목록 조회에 실패했습니다.", data: {} });
+  }
+});
+
+router.post("/create", userMiddleware, function (req, res, next) {
+  const community_id = req.body.community_id;
+  const channel_code = req.body.channel_code;
+  const channel_name = req.body.channel_name;
+  const channel_img_path = req.body.channel_img_path;
+  const channel_desc = req.body.channel_desc;
+  const channel_state_code = req.body.channel_state_code;
+  const reg_member_id = req.body.reg_member_id;
+  const edit_member_id = req.body.edit_member_id;
+
+  const channel = chatStore.addChannel({
+    community_id,
+    channel_code,
+    channel_name,
+    channel_img_path,
+    channel_desc,
+    channel_state_code,
+    reg_member_id,
+    edit_member_id,
+  });
+
+  if (channel) {
+    res.json({ message: "채널정보 등록에 성공했습니다.", data: channel });
+  } else {
+    res.json({ message: "채널정보 등록에 실패했습니다.", data: {} });
+  }
+});
+
+router.post("/modify", userMiddleware, function (req, res, next) {
+  const channel_id = req.body.channel_id;
+  const community_id = req.body.community_id;
+  const channel_code = req.body.channel_code;
+  const channel_name = req.body.channel_name;
+  const channel_img_path = req.body.channel_img_path;
+  const channel_desc = req.body.channel_desc;
+  const channel_state_code = req.body.channel_state_code;
+  const edit_member_id = req.body.edit_member_id;
+
+  const channel = chatStore.updateChannel({
+    channel_id,
+    community_id,
+    channel_code,
+    channel_name,
+    channel_img_path,
+    channel_desc,
+    channel_state_code,
+    edit_member_id,
+  });
+
+  if (channel) {
+    res.json({ message: "채널정보 수정에 성공했습니다.", data: channel });
+  } else {
+    res.json({ message: "채널정보 수정에 실패했습니다.", data: {} });
+  }
+});
+
+router.post("/delete", userMiddleware, function (req, res, next) {
+  const channel_id = Number(req.body.channel_id);
+
+  const channel = chatStore.deleteChannel(channel_id);
+
+  if (channel) {
+    res.json({ message: "채널정보 삭제에 성공했습니다.", data: channel });
+  } else {
+    res.json({ message: "채널정보 삭제에 실패했습니다.", data: {} });
+  }
+});
+
+router.get("/:cid", userMiddleware, function (req, res, next) {
+  const channel_id = Number(req.params.cid);
+
+  const channel = chatStore.getChannelById(channel_id);
+
+  if (channel) {
+    res.json({ message: "채널 조회에 성공했습니다.", data: channel });
+  } else {
+    res.json({
+      message: "채널 조회에 실패했습니다. 올바른 채널인지 확인하십시오.",
+      data: {},
+    });
+  }
+});
+
+router.get("/:cid/messages", userMiddleware, function (req, res, next) {
+  const channel_id = Number(req.params.cid);
+
+  const channel = chatStore.getChannelById(channel_id);
+
+  const channelMsgs = chatStore.getMessagesbyChannelId(channel_id);
+
+  if (channelMsgs) {
+    res.json({
+      message: "채널 메시지 조회에 성공했습니다.",
+      data: {
+        channel,
+        chats: channelMsgs,
+      },
+    });
+  } else {
+    res.json({
+      message: "채널 메시지 조회에 실패했습니다.",
+      data: {},
+    });
+  }
+});
+
+router.post("/:cid/send", userMiddleware, function (req, res, next) {
+  const channel_id = Number(req.params.cid);
+  const message = req.body.message;
+  const member_id = req.session.member_id;
+  const member_nick = req.session.member_nick;
+
+  const sendChat = chatStore.sendChat(
+    channel_id,
+    member_id,
+    member_nick,
+    message
+  );
+
+  if (sendChat) {
+    res.json(sendChat);
+  } else {
+    res.json({
+      message: "채널 메시지 조회에 실패했습니다.",
+      data: {},
+    });
+  }
+});
+
+module.exports = router;

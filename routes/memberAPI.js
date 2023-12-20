@@ -1,108 +1,75 @@
-// 회원 정보관리 RESTful API 전용 라우팅 기능 제공
-
-var express = require('express');
+var express = require("express");
 var router = express.Router();
+var dotenv = require("dotenv");
 
-// DB에 저장된 전체 회원정보 목록 데이터 조회
-// http://localhost:3000/api/member/all
-router.get('/all', async(req, res) => {
+var memberStore = require("../store/member.store");
 
-  var memberList = [
-    {member_id:1, member_name:"맴버1"},
-    {member_id:2, member_name:"맴버2"},
-    {member_id:3, member_name:"맴버3"},
-  ]
+var userMiddleware = require("../middleware/user.middleware");
 
-  res.json(memberList);
+dotenv.config();
 
+const webTitle = process.env.PROJECT_TITLE;
+
+router.get("/all", userMiddleware, function (req, res, next) {
+  try {
+    const memberList = memberStore.getUsers();
+    res.json({ message: "회원 목록 조회에 성공했습니다.", data: memberList });
+  } catch (error) {
+    res.json({ message: "회원 목록 조회에 실패했습니다.", data: {} });
+  }
 });
 
+router.post("/modify", userMiddleware, function (req, res, next) {
+  const member_id = req.body.member_id;
+  const password = req.body.password;
+  const name = req.body.name;
+  const telephone = req.body.telephone;
+  const birthDate = req.body.birthDate;
 
-// 신규 회원정보 데이터 등록처리
-// http://localhost:3000/api/member/create
-router.post('/create',async(req,res) => {
-  
-  // 1) 가정 데이터 전달
-  /*
-    {
-      "member_name":"맴버1",
-      "member_desc":"맴버설명1"
-    }
-  */
+  const member = memberStore.modifyMember(
+    member_id,
+    password,
+    name,
+    telephone,
+    birthDate
+  );
 
-  // 2) json 데이터 추출
-  var memberName = req.body.member_name;
-  var memberDescription = req.body.member_desc;
-
-  // 3) DB의 회원정보 테이블에 해당 정보 저장하기 위한 jswon 객체 정의
-  var member = {
-    member_id:1,
-    member_name:memberName,
-    member_desc:memberDescription
+  if (member) {
+    res.json({ message: "회원정보 수정에 성공했습니다.", data: member });
+  } else {
+    res.json({ message: "회원정보 수정에 실패했습니다.", data: {} });
   }
-
-  // 4) DB에 회원정보 테이블에 프론트에서 넘어온 데이터를 저장한다.
-
-  // 5) 저장 후 반환되는 실제 DB에 저장된 단일 회원정보를 클라이언트에 반환
-
-  res.json(member);
-
 });
 
+// 신규 회원정보 데이터 등록 등록 - 이미 회원가입에서 구현하여 일단 패스
 
-//-----------------------------------미완성
+router.post("/delete", userMiddleware, function (req, res, next) {
+  const member_id = req.body.member_id;
 
-// 기존 회원정보 데이터 수정처리
-
-
-// 기존 회원정보 데이터 삭제 처리
-
-//-----------------------------------
-
-
-
-
-// 단일 회원 정보 데이터 조회
-//쿼리스트링방식
-// http://localhost:3000/api/member?cid=1
-router.get('/', async(req,res) =>{
-
-  // 1) URL에서 회원 고유번호를 추출
-  var memberId = req.query.cid;
-
-  // 2) 회원 고유번호를 이용해 단일전의 회원정보 조회
-  var member = {
-    member_id:1,
-    member_name:"맴버1"
+  if (!memberStore.getUserById(member_id)) {
+    res.json({ message: "회원정보 삭제에 실패했습니다.", data: {} });
   }
 
-  //3) json데이터에 전달 
-  res.json(member);
+  memberStore.deleteUser(member_id);
 
-})
+  const member = memberStore.getUsers();
 
+  res.json({ message: "회원정보 삭제에 성공했습니다.", data: member });
+});
 
-// 단일 회원 정보 데이터 조회
-// 파라미터방식-와일드카드정의 방식
-// 파라미터방식/화일드카드방식은 라우터 파일의 최하단에 정의
-// http://localhost:3000/api/member/1
-router.get('/:id', async(req,res) =>{
+router.get("/:mid", userMiddleware, function (req, res, next) {
+  const member_id = req.params.mid;
 
-  // 1) URL에서 회원 고유번호를 추출
-  var memberId = req.params.id;
+  const member = memberStore.getUserById(member_id);
 
-  // 2) 회원 고유번호를 이용해 단일전의 회원정보 조회
-  var member = {
-    member_id:1,
-    member_name:"맴버1"
+  if (member) {
+    res.json({ message: "회원 조회에 성공했습니다.", data: member });
+  } else {
+    res.json({
+      message: "회원 조회에 실패했습니다. 올바른 회원인지 확인하십시오.",
+      data: {},
+    });
   }
-
-  //3) json데이터에 전달 
-  res.json(member);
-
-})
-  
-
-
+});
 
 module.exports = router;

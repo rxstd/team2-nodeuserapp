@@ -17,42 +17,56 @@ router.get("/", function (req, res, next) {
 });
 
 router.get("/login", function (req, res, next) {
-  res.render("auth/sign-in", { title: webTitle });
+  res.render("auth/sign-in", { title: webTitle, layout: false });
 });
 
 router.post("/login", function (req, res, next) {
+  let defaultJson = {
+    result: true,
+    message: "",
+    data: {},
+  };
+
   const username = req.body.username;
 
+  const emailRegex = /\S+@\S+\.\S+/;
+  if (!emailRegex.test(username)) {
+    defaultJson.result = false;
+    defaultJson.message = "이메일 형식이 올바르지 않습니다.";
+  }
+
   if (username === undefined || username === "") {
-    res.send(
-      `<script>alert("이메일이 공란이어서는 안됩니다.");history.back();</script>`
-    );
-    return;
+    defaultJson.result = false;
+    defaultJson.message = "이메일이 공란이어서는 안됩니다.";
   }
 
   const password = req.body.password;
 
   if (password === undefined || password === "") {
-    res.send(
-      `<script>alert("비밀번호가 공란이어서는 안됩니다.");history.back();</script>`
-    );
-    return;
+    defaultJson.result = false;
+    defaultJson.message = "비밀번호가 공란이어서는 안됩니다.";
   }
 
   const user = memberStore.authUser(username, password);
 
+  console.log(username, password);
+
   if (user) {
     req.session.member_id = user.member_id;
-    res.redirect("/");
+    req.session.member_nick = user.name;
+    defaultJson.message = "로그인에 성공하였습니다.";
+    defaultJson.data = user;
   } else {
-    res.send(
-      `<script>alert("일치하는 인증 정보가 없습니다.\\n이메일 혹은 비밀번호를 확인하십시오.");history.back();</script>`
-    );
+    defaultJson.result = false;
+    defaultJson.message =
+      "일치하는 인증 정보가 없습니다.\n이메일 혹은 비밀번호를 확인하십시오.";
   }
+
+  res.json(defaultJson);
 });
 
 router.get("/entry", function (req, res, next) {
-  res.render("auth/sign-up", { title: webTitle });
+  res.render("auth/sign-up", { title: webTitle, layout: false });
 });
 
 router.post("/entry", function (req, res, next) {
@@ -138,7 +152,7 @@ router.get("/logout", function (req, res, next) {
 });
 
 router.get("/find", function (req, res, next) {
-  res.render("auth/forgot-pw", { title: webTitle });
+  res.render("auth/forgot-pw", { title: webTitle, layout: false });
 });
 
 router.post("/find", function (req, res, next) {

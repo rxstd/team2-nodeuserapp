@@ -9,7 +9,7 @@ dotenv.config();
 const webTitle = process.env.PROJECT_TITLE;
 
 router.get("/", userMiddleware, function (req, res, next) {
-  res.render("chat/index", { title: webTitle });
+  res.render("chat/index", { title: webTitle, recentChats: [], chats: [] });
 });
 
 module.exports = router;

@@ -7,10 +7,12 @@ let channelDB = [
     channel_img_path: "channel1.png",
     channel_desc: "채널1입니다.",
     channel_state_code: 1,
-    reg_date: "2023-12-12 11:11:11",
+    reg_date: new Date("2023-12-12 11:11:11").toLocaleString(),
     reg_member_id: 1,
-    edit_date: "2023-12-12 11:11:11",
+    edit_date: new Date("2023-12-12 11:11:11").toLocaleString(),
     edit_member_id: 1,
+    latest_chat: "",
+    iconic_color: "red",
   },
   {
     channel_id: 2,
@@ -20,10 +22,12 @@ let channelDB = [
     channel_img_path: "channel2.png",
     channel_desc: "채널2입니다.",
     channel_state_code: 1,
-    reg_date: "2023-12-12 11:11:11",
+    reg_date: new Date("2023-12-12 11:11:11").toLocaleString(),
     reg_member_id: 1,
-    edit_date: "2023-12-12 11:11:11",
+    edit_date: new Date("2023-12-12 11:11:11").toLocaleString(),
     edit_member_id: 1,
+    latest_chat: "",
+    iconic_color: "blue",
   },
 ];
 
@@ -34,12 +38,12 @@ let channelMemberDB = [
     nick_name: "멤버1",
     member_type_code: 1,
     active_state_code: 1,
-    last_contact_date: "2023-12-12 11:11:11",
-    member_out_date: "2023-12-12 11:11:11",
+    last_contact_date: new Date("2023-12-12 11:11:11").toLocaleString(),
+    member_out_date: new Date("2023-12-12 11:11:11").toLocaleString(),
     connection_id: "connection1",
     ip_address: "1.1.1.1",
     edit_member_id: 1,
-    edit_date: "2023-12-12 11:11:11",
+    edit_date: new Date("2023-12-12 11:11:11").toLocaleString(),
   },
   {
     channel_id: 1,
@@ -47,12 +51,12 @@ let channelMemberDB = [
     nick_name: "멤버2",
     member_type_code: 1,
     active_state_code: 1,
-    last_contact_date: "2023-12-12 11:11:11",
-    member_out_date: "2023-12-12 11:11:11",
+    last_contact_date: new Date("2023-12-12 11:11:11").toLocaleString(),
+    member_out_date: new Date("2023-12-12 11:11:11").toLocaleString(),
     connection_id: "connection2",
     ip_address: "2.2.2.2",
     edit_member_id: 1,
-    edit_date: "2023-12-12 11:11:11",
+    edit_date: new Date("2023-12-12 11:11:11").toLocaleString(),
   },
   {
     channel_id: 2,
@@ -60,12 +64,12 @@ let channelMemberDB = [
     nick_name: "멤버1",
     member_type_code: 1,
     active_state_code: 1,
-    last_contact_date: "2023-12-12 11:11:11",
-    member_out_date: "2023-12-12 11:11:11",
+    last_contact_date: new Date("2023-12-12 11:11:11").toLocaleString(),
+    member_out_date: new Date("2023-12-12 11:11:11").toLocaleString(),
     connection_id: "connection1",
     ip_address: "3.3.3.3",
     edit_member_id: 1,
-    edit_date: "2023-12-12 11:11:11",
+    edit_date: new Date("2023-12-12 11:11:11").toLocaleString(),
   },
   {
     channel_id: 2,
@@ -73,12 +77,12 @@ let channelMemberDB = [
     nick_name: "멤버2",
     member_type_code: 1,
     active_state_code: 1,
-    last_contact_date: "2023-12-12 11:11:11",
-    member_out_date: "2023-12-12 11:11:11",
+    last_contact_date: new Date("2023-12-12 11:11:11").toLocaleString(),
+    member_out_date: new Date("2023-12-12 11:11:11").toLocaleString(),
     connection_id: "connection2",
     ip_address: "4.4.4.4",
     edit_member_id: 1,
-    edit_date: "2023-12-12 11:11:11",
+    edit_date: new Date("2023-12-12 11:11:11").toLocaleString(),
   },
 ];
 
@@ -94,9 +98,9 @@ let channelMsgDB = [
     ip_address: "1.1.1.1",
     top_channel_msg_id: 1,
     msg_state_code: 1,
-    msg_date: "2023-12-12 11:11:11",
-    edit_date: "2023-12-12 11:11:11",
-    del_date: "2023-12-12 11:11:11",
+    msg_date: new Date("2023-12-12 11:11:11").toLocaleString(),
+    edit_date: new Date("2023-12-12 11:11:11").toLocaleString(),
+    del_date: new Date("2023-12-12 11:11:11").toLocaleString(),
   },
   {
     channel_msg_id: 2,
@@ -109,9 +113,9 @@ let channelMsgDB = [
     ip_address: "1.1.1.1",
     top_channel_msg_id: 1,
     msg_state_code: 1,
-    msg_date: "2023-12-12 11:11:11",
-    edit_date: "2023-12-12 11:11:11",
-    del_date: "2023-12-12 11:11:11",
+    msg_date: new Date("2023-12-12 11:11:11").toLocaleString(),
+    edit_date: new Date("2023-12-12 11:11:11").toLocaleString(),
+    del_date: new Date("2023-12-12 11:11:11").toLocaleString(),
   },
   {
     channel_msg_id: 3,
@@ -124,9 +128,9 @@ let channelMsgDB = [
     ip_address: "2.2.2.2",
     top_channel_msg_id: 1,
     msg_state_code: 1,
-    msg_date: "2023-12-12 11:11:11",
-    edit_date: "2023-12-12 11:11:11",
-    del_date: "2023-12-12 11:11:11",
+    msg_date: new Date("2023-12-12 11:11:11").toLocaleString(),
+    edit_date: new Date("2023-12-12 11:11:11").toLocaleString(),
+    del_date: new Date("2023-12-12 11:11:11").toLocaleString(),
   },
   {
     channel_msg_id: 4,
@@ -139,9 +143,9 @@ let channelMsgDB = [
     ip_address: "1.1.1.1",
     top_channel_msg_id: 1,
     msg_state_code: 1,
-    msg_date: "2023-12-12 11:11:11",
-    edit_date: "2023-12-12 11:11:11",
-    del_date: "2023-12-12 11:11:11",
+    msg_date: new Date("2023-12-12 11:11:11").toLocaleString(),
+    edit_date: new Date("2023-12-12 11:11:11").toLocaleString(),
+    del_date: new Date("2023-12-12 11:11:11").toLocaleString(),
   },
   {
     channel_msg_id: 5,
@@ -154,11 +158,27 @@ let channelMsgDB = [
     ip_address: "2.2.2.2",
     top_channel_msg_id: 1,
     msg_state_code: 1,
-    msg_date: "2023-12-12 11:11:11",
-    edit_date: "2023-12-12 11:11:11",
-    del_date: "2023-12-12 11:11:11",
+    msg_date: new Date("2023-12-12 11:11:11").toLocaleString(),
+    edit_date: new Date("2023-12-12 11:11:11").toLocaleString(),
+    del_date: new Date("2023-12-12 11:11:11").toLocaleString(),
   },
 ];
+
+function updateLatestChat() {
+  // 모든 channelDB를 순회하면서
+  // channel_id에 해당하는 channelMsgDB를 가져와서
+  // channelMsgDB의 마지막 메시지를 가져와서
+  // channelDB의 latest_chat에 저장한다.
+
+  channelDB.forEach((channel) => {
+    let channelMsgs = channelMsgDB.filter(
+      (channelMsg) => channelMsg.channel_id === channel.channel_id
+    );
+    channel.latest_chat = channelMsgs[channelMsgs.length - 1].message;
+  });
+}
+
+updateLatestChat();
 
 function getChannels() {
   return channelDB;
@@ -214,7 +234,44 @@ function getChatMembersbyChannelId(id) {
 }
 
 function getMessagesbyChannelId(id) {
-  return channelMsgDB.filter((channelMsg) => channelMsg.channel_id === id);
+  let chats = channelMsgDB.filter((channelMsg) => channelMsg.channel_id == id);
+  return chats;
+}
+
+function sendChat(channel_id, member_id, nick_name, message) {
+  let newChat = {};
+
+  newChat.channel_msg_id =
+    channelMsgDB[channelMsgDB.length - 1].channel_msg_id + 1;
+  newChat.channel_id = channel_id;
+  newChat.member_id = member_id;
+  newChat.nick_name = nick_name;
+  newChat.msg_type_code = 3;
+  newChat.connection_id = "connection1";
+  newChat.message = message;
+  newChat.ip_address = "1.1.1.1";
+  newChat.top_channel_msg_id = 1;
+  newChat.msg_state_code = 1;
+  newChat.msg_date = new Date().toLocaleString();
+  newChat.edit_date = newChat.msg_date;
+  newChat.del_date = newChat.msg_date;
+
+  channelMsgDB.push(newChat);
+
+  updateLatestChat();
+
+  const channelInfo = getChannelById(channel_id);
+  const channelMsgs = getMessagesbyChannelId(channel_id);
+
+  const retData = {
+    message: "채널 메시지 조회에 성공했습니다.",
+    data: {
+      channel: channelInfo,
+      chats: channelMsgs,
+    },
+  };
+
+  return retData;
 }
 
 module.exports = {
@@ -225,4 +282,5 @@ module.exports = {
   deleteChannel,
   getChatMembersbyChannelId,
   getMessagesbyChannelId,
+  sendChat,
 };
