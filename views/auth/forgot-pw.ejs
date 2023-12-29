@@ -8,6 +8,11 @@
     <title>Forgot | ConnectMe | Chat Application HTML Template</title>
     <link rel="stylesheet" href="./assets/css/bundle.css?v131" />
     <link rel="stylesheet" href="./assets/css/app.css?v131" />
+    <script
+      src="https://code.jquery.com/jquery-3.7.1.min.js"
+      integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo="
+      crossorigin="anonymous"
+    ></script>
   </head>
 
   <body class="tyn-body">
@@ -38,7 +43,7 @@
                   </svg>
                 </a>
               </div>
-              <form action="/forgot" method="POST">
+              <form action="/find" method="POST" id="findForm">
                 <div class="card border-0">
                   <div class="p-4">
                     <h3>비밀번호 찾기</h3>
@@ -88,5 +93,25 @@
     </div>
     <script src="./assets/js/bundle.js?v131"></script>
     <script src="./assets/js/app.js?v131"></script>
+
+    <script>
+      $("#findForm").submit(function (e) {
+        e.preventDefault();
+        $.ajax({
+          url: "/api/member/find",
+          type: "post",
+          data: $("#findForm").serialize(),
+          success: function (data) {
+            if (data.result == true) {
+              alert(data.message);
+
+              location.href = "/";
+            } else {
+              alert(data.message);
+            }
+          },
+        });
+      });
+    </script>
   </body>
 </html>

@@ -62,7 +62,13 @@ router.post("/login", function (req, res, next) {
       "일치하는 인증 정보가 없습니다.\n이메일 혹은 비밀번호를 확인하십시오.";
   }
 
-  res.json(defaultJson);
+  if (defaultJson.result) {
+    res.send(`<script>alert("${defaultJson.message}");</script>`);
+  } else {
+    res.send(
+      `<script>alert("${defaultJson.message}");history.back();</script>`
+    );
+  }
 });
 
 router.get("/entry", function (req, res, next) {
@@ -77,71 +83,91 @@ router.post("/entry", function (req, res, next) {
   const telephone = req.body.telephone;
   const birthDate = req.body.birth;
 
-  if (username === undefined || username === "") {
-    res.send(
-      `<script>alert("이메일이 공란이어서는 안됩니다.");history.back();</script>`
-    );
-    return;
+  let defaultJson = {
+    result: true,
+    message: "",
+    data: {},
+  };
+
+  if (
+    username === undefined ||
+    (username === "" && defaultJson.result != false)
+  ) {
+    defaultJson.result = false;
+    defaultJson.message = "이메일이 공란이어서는 안됩니다.";
   }
 
-  if (password === undefined || password === "") {
-    res.send(
-      `<script>alert("비밀번호가 공란이어서는 안됩니다.");history.back();</script>`
-    );
-    return;
+  const emailRegex = /\S+@\S+\.\S+/;
+  if (!emailRegex.test(username)) {
+    defaultJson.result = false;
+    defaultJson.message = "이메일 형식이 올바르지 않습니다.";
   }
 
-  if (passwordConfirm === undefined || passwordConfirm === "") {
-    res.send(
-      `<script>alert("비밀번호 확인이 공란이어서는 안됩니다.");history.back();</script>`
-    );
-    return;
+  if (
+    password === undefined ||
+    (password === "" && defaultJson.result != false)
+  ) {
+    defaultJson.result = false;
+    defaultJson.message = "비밀번호가 공란이어서는 안됩니다.";
   }
 
-  if (password !== passwordConfirm) {
-    res.send(
-      `<script>alert("비밀번호와 비밀번호 확인이 일치하지 않습니다.");history.back();</script>`
-    );
-    return;
+  if (
+    passwordConfirm === undefined ||
+    (passwordConfirm === "" && defaultJson.result != false)
+  ) {
+    defaultJson.result = false;
+    defaultJson.message = "비밀번호 확인이 공란이어서는 안됩니다.";
   }
 
-  const user = memberStore.checkUserAlreadyExists(username);
+  if (password !== passwordConfirm && defaultJson.result != false) {
+    defaultJson.result = false;
+    defaultJson.message = "비밀번호가 일치하지 않습니다.";
+  }
 
-  const birth = birthDate.split("-").join("").substring(2);
+  if (defaultJson.result != false) {
+    const user = memberStore.checkUserAlreadyExists(username);
 
-  const nowTime = new Date();
-  const year = nowTime.getFullYear();
-  const month = nowTime.getMonth() + 1;
-  const date = nowTime.getDate();
-  const hour = nowTime.getHours();
-  const minute = nowTime.getMinutes();
-  const second = nowTime.getSeconds();
-  const nowTimeStr = `${year}-${month}-${date} ${hour}:${minute}:${second}`;
+    const birth = birthDate.split("-").join("").substring(2);
 
-  if (user) {
-    res.send(
-      `<script>alert("이미 가입된 이메일입니다.");history.back();</script>`
-    );
+    const nowTime = new Date();
+    const year = nowTime.getFullYear();
+    const month = nowTime.getMonth() + 1;
+    const date = nowTime.getDate();
+    const hour = nowTime.getHours();
+    const minute = nowTime.getMinutes();
+    const second = nowTime.getSeconds();
+    const nowTimeStr = `${year}-${month}-${date} ${hour}:${minute}:${second}`;
+
+    if (user) {
+      defaultJson.result = false;
+      defaultJson.message = "이미 존재하는 이메일입니다.";
+    } else {
+      const newUser = {
+        member_id: memberStore.getUsers().length + 1,
+        email: username,
+        member_password: password,
+        member_name: name,
+        telephone: telephone,
+        entry_type_code: "1",
+        user_state_code: "1",
+        birth_date: birth,
+        reg_date: nowTimeStr,
+        reg_member_id: "1",
+        edit_date: nowTimeStr,
+        edit_member_id: "1",
+      };
+
+      memberStore.addUser(newUser);
+
+      defaultJson.message = "회원가입에 성공하였습니다.";
+    }
+  }
+
+  if (defaultJson.result) {
+    res.send(`<script>alert("${defaultJson.message}");</script>`);
   } else {
-    const newUser = {
-      member_id: memberStore.getUsers().length + 1,
-      email: username,
-      member_password: password,
-      member_name: name,
-      telephone: telephone,
-      entry_type_code: "1",
-      user_state_code: "1",
-      birth_date: birth,
-      reg_date: nowTimeStr,
-      reg_member_id: "1",
-      edit_date: nowTimeStr,
-      edit_member_id: "1",
-    };
-
-    memberStore.addUser(newUser);
-
     res.send(
-      `<script>alert("회원가입이 완료되었습니다.");location.href="/login";</script>`
+      `<script>alert("${defaultJson.message}");history.back();</script>`
     );
   }
 });
@@ -158,22 +184,33 @@ router.get("/find", function (req, res, next) {
 router.post("/find", function (req, res, next) {
   const username = req.body.username;
 
+  let defaultJson = {
+    result: true,
+    message: "",
+    data: {},
+  };
+
   if (username === undefined || username === "") {
-    res.send(
-      `<script>alert("이메일이 공란이어서는 안됩니다.");history.back();</script>`
-    );
-    return;
+    defaultJson.result = false;
+    defaultJson.message = "이메일이 공란이어서는 안됩니다.";
   }
 
   const user = memberStore.getUserByUsername(username);
 
   if (user) {
-    res.send(
-      `<script>alert("초기화된 비밀번호가 귀하의 이메일로 발송되었습니다.\n이는 구현되지 않은 기능입니다.");history.back();</script>`
-    );
+    defaultJson.message =
+      "초기화된 비밀번호가 귀하의 이메일로 발송되었습니다. (구현되지 않은 기능)";
+  } else {
+    defaultJson.result = false;
+    defaultJson.message =
+      "일치하는 인증 정보가 없습니다.\n가입된 이메일이 맞는지 확인하십시오.";
+  }
+
+  if (defaultJson.result) {
+    res.send(`<script>alert("${defaultJson.message}");</script>`);
   } else {
     res.send(
-      `<script>alert("일치하는 인증 정보가 없습니다.\\n가입된 이메일이 맞는지 확인하십시오.");history.back();</script>`
+      `<script>alert("${defaultJson.message}");history.back();</script>`
     );
   }
 });

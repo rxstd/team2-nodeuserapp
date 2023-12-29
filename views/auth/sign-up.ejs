@@ -8,6 +8,11 @@
     <title>Register | ConnectMe | Chat Application HTML Template</title>
     <link rel="stylesheet" href="./assets/css/bundle.css?v131" />
     <link rel="stylesheet" href="./assets/css/app.css?v131" />
+    <script
+      src="https://code.jquery.com/jquery-3.7.1.min.js"
+      integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo="
+      crossorigin="anonymous"
+    ></script>
   </head>
 
   <body class="tyn-body">
@@ -17,7 +22,7 @@
           <div class="row justify-content-center">
             <div class="col-xl-6 col-lg-8">
               <div class="mb-3 text-center">
-                <a class="tyn-logo tyn-logo-sm" href="index.html">
+                <a class="tyn-logo tyn-logo-sm" href="/">
                   <svg
                     viewBox="0 0 225 40"
                     fill="none"
@@ -38,7 +43,7 @@
                   </svg>
                 </a>
               </div>
-              <form action="/sign-up" method="POST">
+              <form action="/api/member/entry" method="POST" id="registerForm">
                 <div class="card border-0">
                   <div class="p-4">
                     <h3>회원가입</h3>
@@ -179,5 +184,25 @@
     </div>
     <script src="./assets/js/bundle.js?v131"></script>
     <script src="./assets/js/app.js?v131"></script>
+
+    <script>
+      $("#registerForm").submit(function (e) {
+        e.preventDefault();
+        $.ajax({
+          url: "/api/member/entry",
+          type: "post",
+          data: $("#registerForm").serialize(),
+          success: function (data) {
+            if (data.result == true) {
+              alert(data.message);
+
+              location.href = "/";
+            } else {
+              alert(data.message);
+            }
+          },
+        });
+      });
+    </script>
   </body>
 </html>
